@@ -274,7 +274,10 @@ MenuZInit(Type) {
 		Type := IniReadValue(INI,Class,"ClassName")
 		WinGetTitle,ItemKey,AHK_CLASS %Class%
 		curClassTitle := ItemKey
-		ItemKey := AdjustString(ItemKey,16)
+		if ItemKey
+			ItemKey := AdjustString(ItemKey,16)
+		else
+			ItemKey := Class
 	}
 	Else
 	{
@@ -1402,7 +1405,9 @@ SetTypeIcon(MenuName,ItemKey,ItemValue,Ext=False) {
 ReturnIcon(MenuName,ItemKey,IconPath,IconIndex,Iconsize="") {
 	If ItemKey
 	{
-		;IconPath := ReplaceVar(IconPath)
+		If !FileExist(IconPath)
+			IconPath := "Icons\" IconPath
+
 		Menu,%MenuName%,Icon,%ItemKey%,%IconPath%,%IconIndex%,%Iconsize%
 		If ErrorLevel
 		{
@@ -1937,13 +1942,19 @@ ReplaceSwitch(MenuString) {
 		{
 			If RegExMatch(Switch,"i)\{ahk:return:[^\{\}]*\}")
 			{
-				RunAHK := A_AhkPath " """ RegExReplace(Switch,"i)(^\{ahk:return:)|\}$") """"
+				ahk := RegExReplace(Switch,"i)(^\{ahk:return:)|\}$")
+				ahk := FileExist(ahk) ? ahk : "Script\" ahk
+
+				RunAHK := A_AhkPath " """ ahk """"
 				Runwait,%RunAHK%,%A_ScriptDir%
 				RString := AhkReturn
 			}
 			Else
 			{
-				RString := A_AhkPath " """ RegExReplace(Switch,"i)(^\{ahk:)|\}$") """"
+				ahk := RegExReplace(Switch,"i)(^\{ahk:)|\}$")
+				ahk := FileExist(ahk) ? ahk : "Script\" ahk
+
+				RString := A_AhkPath " """ ahk """"
 				WorkingDir := A_ScriptDir
 			}
 		}

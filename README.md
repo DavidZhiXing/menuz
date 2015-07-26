@@ -2,6 +2,8 @@
 
 移植了部分 candy 功能到 menuZ，详细修改说明详见 [修改说明.md](_Help/修改说明.md)。
 
+github 地址：[https://github.com/ywzhaiqi/menuz](https://github.com/ywzhaiqi/menuz)
+
 ## 原版说明
 
 打开安装目录的MenuZ.ini，可以看到下面一小段
