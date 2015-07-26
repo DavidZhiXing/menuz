@@ -1,102 +1,104 @@
 # menuZ ModY
 
-��ֲ�˲��� candy ���ܵ� menuZ����ϸ�޸�˵����� [_Help/�޸�˵��.md]��
+移植了部分 candy 功能到 menuZ，详细修改说明详见 [修改说明.md](_Help/修改说明.md)。
 
-�򿪰�װĿ¼��MenuZ.ini�����Կ�������һС��
+## 原版说明
+
+打开安装目录的MenuZ.ini，可以看到下面一小段
 
     [Hotkey]
     !`={mode}
-    !1={mode:��������}
-    !2={mode:����}
+    !1={mode:网络搜索}
+    !2={mode:翻译}
 
-> ��һ����ݼ���ʾAlt+`������ȫ�ּ���Menuz�Ŀ�ݼ� 
+> 第一个快捷键表示Alt+`，这是全局激发Menuz的快捷键 
 > 
-> �ڶ�����ݼ���ʾAlt+1��ȫ�ּ������������˵�
+> 第二个快捷键表示Alt+1，全局激发网络搜索菜单
 > 
-> ��������ݼ���ʾAlt+2��ȫ�ּ����е��ʵ䷭��ҳ��
+> 第三个快捷键表示Alt+2，全局激发有道词典翻译页面
 
-����ѡ��һ���ļ���Ȼ�󰴿�ݼ�����һ�°ɡ�
-������ѡ��һ���ı����ÿ�ݼ��������顣
+试着选中一个文件，然后按快捷键体验一下吧。
+还可以选中一段文本，用快捷键激活体验。
 
 
-MenuZ֧�ֿ���
+MenuZ支持开关
 
-	{run} ����ģʽ
+	{run} 运行模式
 
-    {run:max}  ���
+    {run:max}  最大化
     
-    {run:min}  ��С��
+    {run:min}  最小化
     
-    {run:hide} ��������
+    {run:hide} 隐藏运行
     
-    {run:none} ������
+    {run:none} 不运行
     
-    {mode} ģʽ
+    {mode} 模式
     
-    {mode:xxxx} xxxxģʽ
+    {mode:xxxx} xxxx模式
     
-    {mode:xxxx:all}��ѭ�����д���{mode:xxxx}�Ĳ˵���
+    {mode:xxxx:all}　循环运行带有{mode:xxxx}的菜单项
     
-    {hide} ���ز˵�����ǣ�mode:xxx:all} ������������֮
+    {hide} 隐藏菜单项，但是｛mode:xxx:all} 可以正常运行之
     
-    {icon} ͼ��
+    {icon} 图标
     
-    {icon:icon\baidu.ico} ����ΪiconĿ¼�µ�baidu.ico
+    {icon:icon\baidu.ico} 设置为icon目录下的baidu.ico
     
-    {class} AHK��
+    {class} AHK类
     
-    {class:=notepad|TXGuiFoundation} �˵�ֻ��AHK��Notepad����QQ����Ч
+    {class:=notepad|TXGuiFoundation} 菜单只在AHK类Notepad或者QQ中有效
     
-    {class:!vim} ֻҪ��ǰAHK�಻��Vim���˵���Ч
+    {class:!vim} 只要当前AHK类不是Vim，菜单有效
     
-    {file:path} ȫ·��
+    {file:path} 全路径
     
-    {file:name} �ļ���
+    {file:name} 文件名
     
-    {file:dir} Ŀ¼��
+    {file:dir} 目录名
     
-    {file:ext} ��չ��
+    {file:ext} 扩展名
     
-    {file:namenoext} ������չ�����ļ���
+    {file:namenoext} 不带扩展名的文件名
     
-    {file:driver} ��������
+    {file:driver} 驱动器名
     
-    {file:content} �ļ�����
+    {file:content} 文件内容
     
-    {mfile: "file" } ���ļ��б������ͱȽ��鷳������
+    {mfile: "file" } 多文件列表，解释比较麻烦。。。
     
-    {select} ѡ������
+    {select} 选择内容
     
-    {select:regex} ��Env���ж����RegEx��������ȡѡ������
+    {select:regex} 以Env段中定义的RegEx正则来获取选择内容
     
-    {box:input:��ʾ����}  �ṩһ�����봰��
+    {box:input:提示内容}  提供一个输入窗口
     
-    {box:password:��ʾ����}  �ṩһ���������봰��
+    {box:password:提示内容}  提供一个密码输入窗口
     
-    {box:file:��ʾ����}  �ṩһ���ļ�ѡ�񴰿�
+    {box:file:提示内容}  提供一个文件选择窗口
     
-    {box:fileopen:��ʾ����}  �ṩһ���ļ�ѡ�񴰿ڣ���{box:file}�����ˣ�
+    {box:fileopen:提示内容}  提供一个文件选择窗口（用{box:file}就行了）
     
-    {box:filesave:��ʾ����}  �ṩһ���ļ����洰�ڣ���ʱû���ã�
+    {box:filesave:提示内容}  提供一个文件保存窗口（暂时没有用）
     
-    {box:dir:��ʾ����}  �ṩһ���ļ���ѡ�񴰿�
+    {box:dir:提示内容}  提供一个文件夹选择窗口
     
-    {date:���ڸ�ʽ�� �ṩ�����ڶ��ָ�ʽ
+    {date:日期格式｝ 提供的日期多种格式
     
-    {func:��չ�ű���������չ�ű�
+    {func:扩展脚本｝调用扩展脚本
     
-    {clip} �滻Ϊ���а��������
+    {clip} 替换为剪切板里的内容
     
-    {save:clipall} ��ԭʼ��ѡ�����ݱ��浽���а��У���ѡ��Ԥ��������������չʹ��
+    {save:clipall} 将原始的选择内容保存到剪切板中，此选项预留用来与其它扩展使用
     
-    {save:clip} ���滻��ϵ����ݲ����У����Ǳ��浽���а��
+    {save:clip} 将替换完毕的内容不运行，而是保存到剪切板里。
     
-    {save:ahk}  ����Ϊahk�ļ�����������Ӧ�ļ���·����Ĭ���� A_Temp \ MenuZ.ahk
+    {save:ahk}  保存为ahk文件，并返回相应文件的路径，默认在 A_Temp \ MenuZ.ahk
     
-    {SendMsg}  ����{sendmsg,1075,2924,0} ��TC����������˵������TC��ѡ�������
+    {SendMsg}  举例{sendmsg,1075,2924,0} 在TC里运行这个菜单，会打开TC的选择命令窗口
     
-    {PostMsg}  ͬ�ϣ�ֻ�ǻὫPostMsg���ص������滻��{PostMsg}
+    {PostMsg}  同上，只是会将PostMsg返回的内容替换掉{PostMsg}
     
-    {send} �����ı����ݣ����Ὣ{down}ת��
+    {send} 发送文本内容，不会将{down}转义
     
-    {send:key}  �����ȼ� ��{down} ����Ļᱻת��������ƶ�
+    {send:key}  发送热键 ，{down} 这类的会被转义成向下移动
