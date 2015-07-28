@@ -847,7 +847,7 @@ ToRun(str,Mode="") {
 	global isURLType
 
 	use_Active_Browser := IniReadValue(INI,"config","Use_Active_Browser",1)
-	if use_Active_Browser && isURLType
+	if use_Active_Browser && ( isURLType || isURL(str, True))
 	{
 		webSearch(str)
 		return
@@ -1277,10 +1277,13 @@ TextType(Text) {
 	Return "Text|" Text
 }
 
-isURL(text) {
+isURL(text, strict=False) {
 	; 这个匹配虽然可以匹配更多网址，但需要网址自动修正功能才行
 	; return RegExMatch(text,"^\b(([\w-]+://?|www[.])[^\s()<>]+(?:\([\w\d]+\)|([^[:punct:]\s]|/)))")
-	return RegExMatch(text,"i)^(https?://)?(\w+(-\w+)*\.)+[a-z]{2,}?")
+	if strict
+		return RegExMatch(text,"i)^https?://(\w+(-\w+)*\.)+[a-z]{2,}?")
+	Else
+		return RegExMatch(text,"i)^(https?://)?(\w+(-\w+)*\.)+[a-z]{2,}?")
 }
 
 ;/=======================================================================/
@@ -2469,7 +2472,7 @@ Loop, %scriptCount%
     If  MyScript%A_index%1 = 0    ;没打开
     {
         IfWinNotExist %thisScript% - AutoHotkey    ; 没有打开
-            Run "%A_AhkPath%"  MyScript/%thisScript%
+            Run "%A_AhkPath%" "MyScript/%thisScript%"
 
 
         MyScript%A_index%1 = 1
@@ -2488,7 +2491,7 @@ Loop, %scriptCount%
     If thisScript = %A_thismenuitem%.ahk  ; match found.
     {
         IfWinNotExist %thisScript% - AutoHotkey    ; 没有打开
-            Run "%A_AhkPath%"  MyScript/%thisScript%
+            Run "%A_AhkPath%" "MyScript/%thisScript%"
 
         MyScript%A_index%1 := 1
 
