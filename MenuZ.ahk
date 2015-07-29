@@ -577,7 +577,6 @@ MenuZAddL(MenuName) {
 ;       .lnk|D:\Desktop\exploer.lnk
 Select() {
 	global curWin_Fullpath
-	global isURLType := False
 
 	WinGet,SaveID,ID,A
 	WinGet, curWin_Fullpath, ProcessPath, Ahk_ID %SaveID%
@@ -844,10 +843,9 @@ Interpreter(Item="") {
 
 ToRun(str,Mode="") {
 	global SaveClip
-	global isURLType
 
 	use_Active_Browser := IniReadValue(INI,"config","Use_Active_Browser",1)
-	if use_Active_Browser && ( isURLType || isURL(str, True))
+	if use_Active_Browser && isURL(str, True)
 	{
 		webSearch(str)
 		return
@@ -1249,12 +1247,10 @@ CreateMenu(Type,MenuName,ALLItem="",Enforcement=False, iniPath="") {
 ; 根据正则式返回相应的文本类型
 ; 内置正则式，及INI定义正则式
 TextType(Text) {
-	global isURLType
 	;http://www.baidu.com
 	;ftp://192.168.1.1
 	If isURL(text)
 	{
-		isURLType := True
 		Return "URL|" Text
 	}
 	;If RegExMatch(Text,"i)ftps?://.*")
@@ -2280,11 +2276,11 @@ SkSub_UrlEncode(str, enc="UTF-8") {
 webSearch(url) {
 	global curWin_Fullpath
 	
-	all_browser := IniReadValue(INI, "Config", "InUse_Browser")
+	All_Browser := IniReadValue(INI, "Config", "InUse_Browser")
 	DefaultBrowser := IniReadValue(INI, "Config", "Default_Browser")
 	DefaultBrowser := ReplaceVar(DefaultBrowser)
 	;第①步，看当前当前激活窗口 是否 浏览器
-	If curWin_Fullpath Contains %all_browser%
+	If curWin_Fullpath Contains %All_Browser%
 	{
 		Browser:= curWin_Fullpath
 	}
