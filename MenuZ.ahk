@@ -228,6 +228,8 @@ addCustomTextType() {
 	MenuzRun()
 return
 MenuzRun() {
+	global gType
+
 	MenuZPos["MenuZ"] := 1
 	If Select()
 	{
@@ -235,6 +237,7 @@ MenuzRun() {
 		Tooltip
 		SelectArray := ReturnTypeString(SaveString)
 		Type := SelectArray.Type
+		gType := Type
 		MenuZInit(Type)
 		If RegExMatch(SelectArray.String,"i)\.mza$")
 		{
@@ -258,6 +261,8 @@ MenuzRun() {
 
 MenuZInit(Type) {
 	global curClassTitle
+	global curWin_Fullpath
+
 	EditINI := ""
 	;一级菜单清空
 	Menu,MenuZ,Add
@@ -272,12 +277,17 @@ MenuZInit(Type) {
 	{
 		Class := Substr(SaveString,7)
 		Type := IniReadValue(INI,Class,"ClassName")
-		WinGetTitle,ItemKey,AHK_CLASS %Class%
+		WinGetTitle, ItemKey, AHK_CLASS %Class%
+
 		curClassTitle := ItemKey
 		if ItemKey
 			ItemKey := AdjustString(ItemKey,16)
 		else
 			ItemKey := Class
+
+		Menu, MenuZ, Add, %ItemKey%, <Interpreter>
+		Menu, MenuZ, icon, %ItemKey%, %curWin_Fullpath%
+		Menu, MenuZ, Add
 	}
 	Else
 	{
@@ -301,10 +311,11 @@ MenuZInit(Type) {
     		; 限定不长于20个字符
 			ItemKey := AdjustString(Regexreplace(SaveString,m),16)
 		}
+
+		Menu,MenuZ,Add,%ItemKey%,<Interpreter>
+		Menu,MenuZ,Add
+		SetTypeIcon("MenuZ",ItemKey,Type,True)
 	}
-	Menu,MenuZ,Add,%ItemKey%,<Interpreter>
-	Menu,MenuZ,Add
-	SetTypeIcon("MenuZ",ItemKey,Type,True)
 }
 
 MenuZShow(type) {
@@ -346,7 +357,8 @@ ShowMenu() {
 return
 SimpleConfig() {
 	Global ListBox_SConfig
-	Global Text_SConfig 
+	Global Text_SConfig
+
 	If INIReadValue(INI,"Config","EditRelateINI",0)
 	{
 		GoSub,SCDestroy
@@ -588,7 +600,7 @@ Select() {
 	Sendinput ^c
 	While(!Clipboard)
 	{
-		ClipWait,0.1,1
+		ClipWait,0.05,1
 		If A_Index > %MaxTimeWait%
 			Break
 	}
@@ -683,7 +695,7 @@ InstallMZA() {
 return
 Interpreter(Item="") {
 	global curClassTitle
-	
+
 	notFirstMenu := True
 	; 如果无相应的Item传入，则Loop获取当前Item的菜单内容
 	If Strlen(Item) = 0 
@@ -802,7 +814,7 @@ Interpreter(Item="") {
 		ItemValue := ReplaceSwitch(ItemString)
 
 		NeedRun := True
-		Pos := RegExMatch(ItemString,"i)^\s*\{save:[^\{\}]*\}")  ; 以 {save:XXX} 开头的
+		Pos := RegExMatch(ItemString,"i)^\s*\{(?:save|func)")  ; 以 {save 等开头的
 		if (Pos = 1)
 			NeedRun := False
 
@@ -843,9 +855,10 @@ Interpreter(Item="") {
 
 ToRun(str,Mode="") {
 	global SaveClip
+	global gType
 
 	use_Active_Browser := IniReadValue(INI,"config","Use_Active_Browser",1)
-	if use_Active_Browser && isURL(str, True)
+	if use_Active_Browser && (gType == "URL" || isURL(str, True))
 	{
 		webSearch(str)
 		return
@@ -2382,8 +2395,6 @@ editFile(filePath, lineNum=0, TextEditor="") {
         TextEditor := FileExist(TextEditor) ? TextEditor: "notepad.exe"
     }
 
-    ;filePath := A_ScriptDir "\" filePath
-    
 	SplitPath,TextEditor,,,,namenoext
 	LineJumpArgs := INIReadValue(INI, "TextEditor's_CommandLine", namenoext)
 	if  (LineJumpArgs == "" or lineNum == "" )
@@ -2396,7 +2407,12 @@ editFile(filePath, lineNum=0, TextEditor="") {
 	}
 
 	Run,%cmd%, , UseErrorLevel,TextEditor_PID
-	WinActivate ahk_pid %TextEditor_PID%
+	editorClass := INIReadValue(INI, "Config", "EditorClass")
+	if editorClass
+		WinActivate, %editorClass%
+	else
+		; EverEdit 第二次打开 pid 和上次一样不一样
+		WinActivate ahk_pid %TextEditor_PID%
 }
 
 openByExplorer(exePath) {
@@ -2409,8 +2425,10 @@ openByExplorer(exePath) {
 	Explorer := INIReadValue(INI,"Config","Explorer","explorer.exe /select`,")
 	Explorer := ReplaceVar(Explorer)
 	IfExist, %exePath%
+	{
 		Run, %Explorer% "%exePath%"
 		return True
+	}
 	return False
 }
 
