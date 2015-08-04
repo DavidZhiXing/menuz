@@ -280,10 +280,7 @@ MenuZInit(Type) {
 		WinGetTitle, ItemKey, AHK_CLASS %Class%
 
 		curClassTitle := ItemKey
-		if ItemKey
-			ItemKey := AdjustString(ItemKey,16)
-		else
-			ItemKey := Class
+		ItemKey := ItemKey ? AdjustString(ItemKey, 16) : Class
 
 		Menu, MenuZ, Add, %ItemKey%, <Interpreter>
 		Menu, MenuZ, icon, %ItemKey%, %curWin_Fullpath%
@@ -589,6 +586,7 @@ MenuZAddL(MenuName) {
 ;       .lnk|D:\Desktop\exploer.lnk
 Select() {
 	global curWin_Fullpath
+	global curClass
 
 	WinGet,SaveID,ID,A
 	WinGet, curWin_Fullpath, ProcessPath, Ahk_ID %SaveID%
@@ -613,6 +611,7 @@ Select() {
 	If Strlen(Select) = 0 ; 如果选择无效，根据Class调用菜单
 	{
 		WinGetClass,Class,AHK_ID %SaveID%
+		curClass := Class
 		SaveString :=  "CLASS|" Class 
 		Ifwinexist,MenuZ Debug
 		{
@@ -1293,6 +1292,20 @@ isURL(text, strict=False) {
 		return RegExMatch(text,"i)^https?://(\w+(-\w+)*\.)+[a-z]{2,}?")
 	Else
 		return RegExMatch(text,"i)^(https?://)?(\w+(-\w+)*\.)+[a-z]{2,}?")
+}
+
+newClassToIni() {  ; 创建新的窗口菜单
+	global curClassTitle, curClass
+
+	FileAppend,
+	(
+`n; %curClassTitle%
+[%curClass%]
+test=1
+
+	), %INI%
+
+	editConfig(INI, "test=1")
 }
 
 ;/=======================================================================/
@@ -2409,7 +2422,12 @@ editFile(filePath, lineNum=0, TextEditor="") {
 	Run,%cmd%, , UseErrorLevel,TextEditor_PID
 	editorClass := INIReadValue(INI, "Config", "EditorClass")
 	if editorClass
+	{
+		IfWinNotExist, %editorClass%
+			WinWait, %editorClass%, , 2
+
 		WinActivate, %editorClass%
+	}
 	else
 		; EverEdit 第二次打开 pid 和上次一样不一样
 		WinActivate ahk_pid %TextEditor_PID%
